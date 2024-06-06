@@ -20,6 +20,8 @@ class Config {
         // Load general paremeters
         let maxLines = config.get('maxLines') as number;
         let maxTokens = config.get('maxTokens') as number;
+        let contextPrefixMaxLines = config.get('contextPrefixMaxLines') as number;
+        let contextSuffixMaxLines = config.get('contextSuffixMaxLines') as number;
         let temperature = config.get('temperature') as number;
 
         // Load model
@@ -43,6 +45,8 @@ class Config {
             bearerToken,
             maxLines,
             maxTokens,
+            contextPrefixMaxLines,
+            contextSuffixMaxLines,
             temperature,
             modelName,
             modelFormat,
