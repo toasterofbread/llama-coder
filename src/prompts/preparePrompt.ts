@@ -11,13 +11,25 @@ function getNotebookDocument(document: vscode.TextDocument): vscode.NotebookDocu
         .find(x => x.uri.path === document.uri.path);
 }
 
-export async function preparePrompt(document: vscode.TextDocument, position: vscode.Position, context: vscode.InlineCompletionContext) {
+export async function preparePrompt(document: vscode.TextDocument, position: vscode.Position, prefixMaxLines: number, suffixMaxLines: number, context: vscode.InlineCompletionContext) {
 
     // Load document text
     let text = document.getText();
     let offset = document.offsetAt(position);
+
     let prefix = text.slice(0, offset);
+    if (prefixMaxLines >= 0) {
+        let lines = prefix.split("\n");
+        let line_count = Math.min(lines.length - 1, prefixMaxLines) + 1;
+        prefix = lines.slice(lines.length - line_count - 1, lines.length).join("\n");
+    }
+
     let suffix: string = text.slice(offset);
+    if (suffixMaxLines >= 0) {
+        let lines = suffix.split("\n");
+        let line_count = Math.min(lines.length - 1, suffixMaxLines) + 1;
+        suffix = lines.slice(0, line_count).join("\n");
+    }
 
     let notebookConfig = config.notebook;
 
@@ -42,7 +54,7 @@ export async function preparePrompt(document: vscode.TextDocument, position: vsc
                 beforeCurrentCell = false; // switch to suffix mode
                 return;
             }
-            
+
             // add the markdown cell output to the prompt as a comment
             if (cell.kind === vscode.NotebookCellKind.Markup && commentStart) {
                 if (notebookConfig.includeMarkup) {
@@ -66,7 +78,7 @@ export async function preparePrompt(document: vscode.TextDocument, position: vsc
                                 .map(x => decoder.decode(x.data))
                                 .map(x => x.slice(0, notebookConfig.cellOutputLimit).split('\n')))
                     .flat(3);
-                
+
                 if (cellOutputs.length > 0) {
                     out += `\n${commentStart}Output:`;
                     for (const line of cellOutputs) {
@@ -96,7 +108,7 @@ export async function preparePrompt(document: vscode.TextDocument, position: vsc
     // }
 
     // Add filename and language to prefix
-    // NOTE: Most networks don't have a concept of filenames and expected language, but we expect that some files in training set has something in title that 
+    // NOTE: Most networks don't have a concept of filenames and expected language, but we expect that some files in training set has something in title that
     //       would indicate filename and language
     // NOTE: If we can't detect language, we could ignore this since the number of languages that need detection is limited
     if (language) {

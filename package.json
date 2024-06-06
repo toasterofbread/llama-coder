@@ -153,11 +153,25 @@
             "description": "Max number of new tokens to be generated.",
             "order": 7
           },
+          "inference.contextPrefixMaxLines": {
+            "type": "number",
+            "default": -1,
+            "description": "Max number of prefix lines to include in context, excluding the current line (0 - only the current line, -1 - no limit).",
+            "order": 8,
+            "minimum": -1
+          },
+          "inference.contextSuffixMaxLines": {
+            "type": "number",
+            "default": -1,
+            "description": "Max number of suffix lines to include in context, excluding the current line (0 - only the current line, -1 - no limit).",
+            "order": 9,
+            "minimum": -1
+          },
           "inference.delay": {
             "type": "number",
             "default": 250,
-            "description": "Completion request delay in milliseconds (0 - no delay, -1 - no automatic completions).",
-            "order": 8,
+            "description": "Completion request delay in milliseconds (0 - no delay, -1 - no completions).",
+            "order": 10,
             "minimum": -1,
             "maximum": 5000
           }
